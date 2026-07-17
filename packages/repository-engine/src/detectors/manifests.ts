@@ -1,10 +1,11 @@
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 import type { DependencyRecord } from "@forge/types";
 
 interface PackageJsonShape {
   dependencies?: Record<string, string>;
   devDependencies?: Record<string, string>;
+  workspaces?: string[] | { packages?: string[] };
 }
 
 function readJsonSafe<T>(path: string): T | null {
@@ -86,12 +87,52 @@ function parsePyprojectToml(rootDir: string): DependencyRecord[] {
   return deps;
 }
 
+// npm/yarn/pnpm workspaces ("apps/*", "packages/*") each carry their own
+// dependencies — a monorepo's real frameworks (Next.js, Nest.js, Prisma,
+// test runners) usually live in those manifests, not the root one. Only
+// simple `dir/*` glob patterns are expanded (a one-level readdir), not full
+// glob syntax — every real-world workspaces field uses exactly this shape,
+// and pulling in a glob library for anything fancier isn't earning its keep.
+function resolveWorkspaceDirs(rootDir: string): string[] {
+  const pkg = readJsonSafe<PackageJsonShape>(join(rootDir, "package.json"));
+  if (!pkg?.workspaces) return [];
+  const patterns = Array.isArray(pkg.workspaces) ? pkg.workspaces : pkg.workspaces.packages ?? [];
+
+  const dirs: string[] = [];
+  for (const pattern of patterns) {
+    if (pattern.endsWith("/*")) {
+      const parent = join(rootDir, pattern.slice(0, -2));
+      if (!existsSync(parent)) continue;
+      for (const entry of readdirSync(parent, { withFileTypes: true })) {
+        if (entry.isDirectory()) dirs.push(join(parent, entry.name));
+      }
+    } else {
+      const dir = join(rootDir, pattern);
+      if (existsSync(dir)) dirs.push(dir);
+    }
+  }
+  return dirs;
+}
+
 export function detectDependencies(rootDir: string): DependencyRecord[] {
-  return [
+  const allDeps = [
     ...parsePackageJson(rootDir),
     ...parseRequirementsTxt(rootDir),
     ...parsePyprojectToml(rootDir),
+    ...resolveWorkspaceDirs(rootDir).flatMap((dir) => parsePackageJson(dir)),
   ];
+
+  // De-duplicate by (ecosystem, name), keeping the first occurrence — root
+  // manifest wins over workspace manifests over later workspace manifests,
+  // which is an arbitrary but stable tie-break for version-string display;
+  // detection (is this dependency present at all) doesn't depend on which
+  // version string wins.
+  const seen = new Map<string, DependencyRecord>();
+  for (const dep of allDeps) {
+    const key = `${dep.ecosystem}:${dep.name}`;
+    if (!seen.has(key)) seen.set(key, dep);
+  }
+  return [...seen.values()];
 }
 
 export function readPackageJsonName(rootDir: string): string | null {

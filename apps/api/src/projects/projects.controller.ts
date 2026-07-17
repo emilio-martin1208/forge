@@ -1,10 +1,11 @@
-import { Body, Controller, Get, Param, Post, Req } from "@nestjs/common";
+import { Body, Controller, Get, Inject, Param, Post, Req } from "@nestjs/common";
 import type { ConnectRepositoryRequest } from "@forge/types";
 import { ProjectsService } from "./projects.service.js";
 
 @Controller("projects")
 export class ProjectsController {
-  constructor(private readonly projects: ProjectsService) {}
+  // @Inject() token — see the note in context-package.controller.ts.
+  constructor(@Inject(ProjectsService) private readonly projects: ProjectsService) {}
 
   @Post()
   connect(@Req() req: { userId: string }, @Body() body: ConnectRepositoryRequest) {

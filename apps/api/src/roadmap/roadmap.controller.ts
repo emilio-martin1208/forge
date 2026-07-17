@@ -1,9 +1,10 @@
-import { Controller, Get, Param } from "@nestjs/common";
+import { Controller, Get, Inject, Param } from "@nestjs/common";
 import { RoadmapService } from "./roadmap.service.js";
 
 @Controller("projects/:id/roadmap")
 export class RoadmapController {
-  constructor(private readonly roadmap: RoadmapService) {}
+  // @Inject() token — see the note in context-package.controller.ts.
+  constructor(@Inject(RoadmapService) private readonly roadmap: RoadmapService) {}
 
   @Get()
   list(@Param("id") id: string) {

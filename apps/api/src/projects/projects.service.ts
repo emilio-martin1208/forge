@@ -1,4 +1,4 @@
-import { Injectable, Logger, NotFoundException } from "@nestjs/common";
+import { Inject, Injectable, Logger, NotFoundException } from "@nestjs/common";
 import { prisma } from "@forge/database";
 import type { ConnectRepositoryRequest, HealthDashboardResponse, Project } from "@forge/types";
 import { analyzeProjectQueue } from "../jobs/queue.js";
@@ -29,7 +29,8 @@ function toProjectDto(row: {
 export class ProjectsService {
   private readonly logger = new Logger(ProjectsService.name);
 
-  constructor(private readonly githubSync: GithubSyncService) {}
+  // @Inject() token — see the note in context-package.controller.ts.
+  constructor(@Inject(GithubSyncService) private readonly githubSync: GithubSyncService) {}
 
   async connect(ownerUserId: string, request: ConnectRepositoryRequest): Promise<Project> {
     const installation = await prisma.githubInstallation.findUniqueOrThrow({

@@ -1,10 +1,14 @@
-import { Body, Controller, Get, Header, Param, Post } from "@nestjs/common";
+import { Body, Controller, Get, Header, Inject, Param, Post } from "@nestjs/common";
 import type { GenerateContextPackageRequest } from "@forge/types";
 import { ContextPackageService } from "./context-package.service.js";
 
 @Controller("projects/:id")
 export class ContextPackageController {
-  constructor(private readonly contextPackage: ContextPackageService) {}
+  // Explicit @Inject() token rather than relying on tsx-emitted decorator
+  // metadata — tsx (esbuild) never emits `design:paramtypes`, which is what
+  // Nest's DI normally infers constructor dependencies from. This makes
+  // injection tsx-safe regardless of what emits it. See docs/architecture.md.
+  constructor(@Inject(ContextPackageService) private readonly contextPackage: ContextPackageService) {}
 
   @Post("context-package")
   generate(@Param("id") id: string, @Body() body: GenerateContextPackageRequest) {

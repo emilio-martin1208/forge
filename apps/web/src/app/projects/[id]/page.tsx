@@ -38,7 +38,7 @@ export default async function ProjectDashboardPage({ params }: { params: Promise
       <section className="grid grid-cols-2 sm:grid-cols-3 gap-4">
         <ScoreCard label="Overall" value={overallScore} highlight />
         {Object.entries(snapshot.healthScores).map(([key, value]) => (
-          <ScoreCard key={key} label={key} value={value} />
+          <ScoreCard key={key} label={key.replace(/([A-Z])/g, " $1").trim()} value={value} />
         ))}
       </section>
 

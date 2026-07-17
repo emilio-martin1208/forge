@@ -13,9 +13,11 @@
     "lint": "turbo run lint",
     "test": "turbo run test",
     "typecheck": "turbo run typecheck",
-    "db:generate": "npm run generate --workspace=@forge/database"
+    "db:generate": "npm run generate --workspace=@forge/database",
+    "seed:demo": "tsx scripts/seed-demo.ts"
   },
   "devDependencies": {
+    "tsx": "^4.19.2",
     "turbo": "^2.3.3",
     "typescript": "^5.7.3"
   },
