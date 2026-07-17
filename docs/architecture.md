@@ -240,12 +240,27 @@ Two sync paths:
    upsert only), `release` (published → upsert), `workflow_run` (completed →
    upsert).
 
-**Honest partial implementation:** the spec's "issue created → update
-project roadmap" is *not* wired to an actual roadmap update. There is no
-Roadmap feature yet (Project Creation/milestones are still deferred).
-Storing the issue is real; writing a fake update against a roadmap model
-that doesn't exist would be worse than the current no-op — the webhook
-handler says so explicitly in a comment rather than pretending.
+**"Issue created → update project roadmap" is real, scoped narrowly.** New
+`RoadmapItem` model (`title`, `status: "open"|"done"`, `source`,
+`sourceIssueNumber`) — a real list of tracked work items, not the
+PRD-generated roadmap Project Creation would eventually produce (still
+deferred, unrelated feature). The issue webhook upserts one `RoadmapItem`
+per issue, keyed on `(projectId, source, sourceIssueNumber)`; `status`
+derives from `issue.state` via a two-line pure function
+(`roadmap/roadmapStatus.ts`, tested) since that's the only actual logic in
+what's otherwise a data-copy handler. Read via `GET /projects/:id/roadmap`.
+
+**Deliberately not done in this pass: feeding Agent Feedback Loop
+recommendations into the roadmap too.** `GET /projects/:id/feedback` is a
+read — HTTP GET must be safe/idempotent, and the doc for that endpoint
+already says agents may poll it. Having a GET create a `RoadmapItem` as a
+side effect would mean every poll mints a new roadmap entry for the same
+recommendation. Doing this properly needs a POST-based "accept
+recommendation" action (or de-duplication against the last-recommended
+gap), which is a real design question, not a two-line addition — left for
+when a UI or agent actually needs to act on a recommendation rather than
+just read it. `source` on `RoadmapItem` is a string, not a two-value enum,
+specifically so adding this later doesn't need a migration.
 
 ## Step 11 — AI Code Review
 
@@ -267,7 +282,8 @@ readable via the API either way.
 |---|---|
 | Project Creation (idea → PRD/schema/API) | No repo to ground it in — still the one feature in the spec that doesn't depend on the Repository Intelligence Engine. |
 | Embeddings / RAG / pgvector | Metadata filtering (Step 9) and manifest pattern-matching (Step 6) still cover every v1.1 need. |
-| Full Roadmap / Milestones feature | "Issue created → update roadmap" is a stub for exactly this reason — see Step 10. |
+| PRD-generated roadmap / milestone breakdown (Project Creation's roadmap) | `RoadmapItem` now exists and is real, but only sourced from GitHub issues — generating a roadmap from an idea/PRD is still gated on Project Creation, which is still deferred (see above). |
+| Next-task recommendations feeding the roadmap | See the "Deliberately not done" callout in Step 10 — blocked on a real design decision (POST-based accept action), not effort. |
 | Portfolio Mode, Deployment Analyzer | Both plausibly need cross-repo comparison, which is the trigger for normalizing Snapshot Json into real tables (see Step 3) — neither exists yet. |
 | Inline PR review comments (line-anchored) | Current review posts one summary comment via the Issues API, not the Pull Request Review API's line-anchored comments — simpler client, and findings already carry a `file` field for a user to navigate to manually. Upgrade once summary-comment UX proves insufficient. |
 | GitHub OAuth user sessions / auth guard | Still stubbed (`"dev-user"` fallback) — same reasoning as v1: build it once the GitHub App install flow replaces the manual `/connect` form, not before. |

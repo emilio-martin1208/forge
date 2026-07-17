@@ -9,6 +9,7 @@ import type {
   WorkflowRunWebhookPayload,
 } from "@forge/github";
 import { analyzeProjectQueue, reviewPullRequestQueue } from "../jobs/queue.js";
+import { issueStateToRoadmapStatus } from "../roadmap/roadmapStatus.js";
 
 function splitRepoSlug(fullName: string): { githubOwner: string; githubRepo: string } {
   const [githubOwner, githubRepo] = fullName.split("/");
@@ -131,12 +132,31 @@ export class GithubWebhookController {
       },
     });
 
-    // "Issue created -> update project roadmap" from the spec is a stub:
-    // there is no Roadmap feature yet (Project Creation / milestones are
-    // still deferred — see docs/architecture.md). Storing the issue is real;
-    // wiring it into a roadmap update is a no-op until that feature exists.
-    // Building a fake roadmap write against a model that doesn't exist would
-    // be worse than not having this line.
+    // "Issue created -> update project roadmap": a real RoadmapItem, not the
+    // PRD-generated roadmap from Project Creation (still deferred — see
+    // docs/architecture.md). `issue.state` already reflects the state this
+    // webhook delivery resulted in, so it's the only input the status needs.
+    await prisma.roadmapItem.upsert({
+      where: {
+        projectId_source_sourceIssueNumber: {
+          projectId: project.id,
+          source: "github-issue",
+          sourceIssueNumber: issue.number,
+        },
+      },
+      create: {
+        projectId: project.id,
+        title: issue.title,
+        status: issueStateToRoadmapStatus(issue.state),
+        source: "github-issue",
+        sourceIssueNumber: issue.number,
+      },
+      update: {
+        title: issue.title,
+        status: issueStateToRoadmapStatus(issue.state),
+      },
+    });
+
     return { synced: true, issueNumber: issue.number };
   }
 

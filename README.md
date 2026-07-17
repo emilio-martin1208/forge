@@ -40,6 +40,7 @@ GET  /projects/:id                      project metadata
 GET  /projects/:id/health               health dashboard
 POST /projects/:id/readme               generate README
 GET  /projects/:id/feedback             agent feedback loop / next-task recommendation
+GET  /projects/:id/roadmap              roadmap items (sourced from GitHub issues today)
 POST /projects/:id/context-package      architecture.md / database.md / coding-standards.md / known-issues.md / task.md
 GET  /projects/:id/cursor-rules         .cursorrules
 POST /projects/:id/codex-task           Codex-format structured task JSON
@@ -74,8 +75,8 @@ npm run typecheck          # turbo run typecheck, all workspaces
   installation ID)
 - GitHub OAuth session / auth guard on the API
 - Deployment configs (Railway/Vercel)
-- Roadmap feature (so "issue created → update roadmap" is a stub — see
-  Step 10 in the architecture doc)
+- PRD-generated roadmap (Project Creation) — the roadmap that exists today
+  is real but only sourced from GitHub issues, not from an idea/PRD
 
 All intentional — see the "Deferred" table in
 [docs/architecture.md](docs/architecture.md).

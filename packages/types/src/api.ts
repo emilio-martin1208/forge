@@ -78,3 +78,16 @@ export interface FeedbackReport {
   healthScoreDeltas: Record<string, number>;
   nextTask: NextTaskRecommendation | null;
 }
+
+// --- Roadmap ---
+
+export interface RoadmapItem {
+  id: string;
+  projectId: string;
+  title: string;
+  status: "open" | "done";
+  source: "github-issue";
+  sourceIssueNumber: number | null;
+  createdAt: string;
+  updatedAt: string;
+}

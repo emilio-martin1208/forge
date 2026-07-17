@@ -59,6 +59,7 @@ model Project {
   issues           Issue[]
   releases         Release[]
   workflowRuns     WorkflowRun[]
+  roadmapItems     RoadmapItem[]
 
   @@unique([githubOwner, githubRepo])
   @@index([ownerUserId])
@@ -149,6 +150,29 @@ model Issue {
 
   @@unique([projectId, number])
   @@map("issues")
+}
+
+// The roadmap Forge actually maintains: real project work items, not a
+// PRD-generated plan (Project Creation's roadmap generation is still
+// deferred — see docs/architecture.md). Only one source is wired up so far
+// — GitHub issues — but `source` stays a string rather than a two-value enum
+// so a second source (e.g. an accepted next-task recommendation) doesn't
+// need a schema migration to add.
+model RoadmapItem {
+  id                String   @id @default(cuid())
+  projectId         String
+  title             String
+  status            String // "open" | "done"
+  source            String // "github-issue"
+  sourceIssueNumber Int?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@unique([projectId, source, sourceIssueNumber])
+  @@index([projectId, status])
+  @@map("roadmap_items")
 }
 
 model Release {
