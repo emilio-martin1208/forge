@@ -12,9 +12,13 @@ function toJson<T>(value: T): Prisma.InputJsonValue {
 }
 
 async function main() {
+  // Same identity the API resolves unauthenticated requests to
+  // (getDevUserId(), apps/api/src/shared/devUser.ts) — otherwise this
+  // seeded project belongs to a different user than the dashboard queries
+  // for and silently never shows up.
   const user = await prisma.user.upsert({
-    where: { githubId: "demo-user" },
-    create: { githubId: "demo-user", email: "demo@forge.local", name: "Demo User" },
+    where: { githubId: "dev-user" },
+    create: { githubId: "dev-user", name: "Dev User" },
     update: {},
   });
 
@@ -33,7 +37,7 @@ async function main() {
       githubRepo: "forge",
       defaultBranch: "main",
     },
-    update: {},
+    update: { ownerUserId: user.id },
   });
 
   const analysis = analyzeRepository({

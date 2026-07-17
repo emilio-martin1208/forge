@@ -10,12 +10,20 @@ export default function HomePage() {
         languages, frameworks, routes, features, and health — then generates documentation
         grounded in what&apos;s actually there.
       </p>
-      <a
-        href="/connect"
-        className="rounded-md bg-accent px-5 py-2.5 text-sm font-medium text-white hover:opacity-90 transition"
-      >
-        Connect a repository
-      </a>
+      <div className="flex gap-3">
+        <a
+          href="/connect"
+          className="rounded-md bg-accent px-5 py-2.5 text-sm font-medium text-white hover:opacity-90 transition"
+        >
+          Connect a repository
+        </a>
+        <a
+          href="/create"
+          className="rounded-md border border-border px-5 py-2.5 text-sm font-medium hover:bg-surface transition"
+        >
+          Start from an idea
+        </a>
+      </div>
     </main>
   );
 }

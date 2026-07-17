@@ -23,9 +23,32 @@ model User {
   avatarUrl String?
   createdAt DateTime @default(now())
 
-  projects Project[]
+  projects     Project[]
+  projectIdeas ProjectIdea[]
 
   @@map("users")
+}
+
+// Project Creation: the one feature not grounded in a connected repo's
+// Snapshot — generated from a free-text description via a single LLM call.
+// Deliberately narrow: a PRD summary + 2-3 architecture options with a
+// recommendation, not the full spec's DB schema/API contract/GitHub Issues
+// generation, which stay deferred until this loop is validated.
+model ProjectIdea {
+  id                      String   @id @default(cuid())
+  ownerUserId             String
+  description             String
+  prdSummary              String
+  coreFeatures            Json // string[]
+  architectureOptions     Json // ArchitectureOption[]
+  recommendedIndex        Int
+  recommendationRationale String
+  createdAt               DateTime @default(now())
+
+  owner User @relation(fields: [ownerUserId], references: [id], onDelete: Cascade)
+
+  @@index([ownerUserId, createdAt])
+  @@map("project_ideas")
 }
 
 model GithubInstallation {

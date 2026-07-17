@@ -65,6 +65,15 @@ export class ProjectsService {
     return toProjectDto(project);
   }
 
+  async list(ownerUserId: string): Promise<Project[]> {
+    const projects = await prisma.project.findMany({
+      where: { ownerUserId },
+      include: { snapshots: { orderBy: { createdAt: "desc" }, take: 1 } },
+      orderBy: { createdAt: "desc" },
+    });
+    return projects.map(toProjectDto);
+  }
+
   async getById(projectId: string): Promise<Project> {
     const project = await prisma.project.findUnique({
       where: { id: projectId },

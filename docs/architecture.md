@@ -276,12 +276,56 @@ regex-extraction fallback if the model doesn't return clean JSON. Persists a
 failed comment post doesn't fail the job, since the review is already
 readable via the API either way.
 
+## Step 12 — Project Creation: idea → PRD summary + architecture options
+
+The one feature in the whole product that is **not** grounded in a
+Snapshot — there's no repo yet. `apps/api/src/ideas/`:
+
+- `parseIdeaResponse.ts` — pure JSON-validation of the model's output
+  (shape-checks every field, including that `recommendedIndex` is actually
+  in range). Unlike the PR review pipeline, there's **no deterministic
+  fallback** if the model's JSON is malformed — the whole output IS the
+  generation, there's no Snapshot to degrade to — so this throws instead of
+  silently returning something wrong. Fully unit-tested (7 cases: clean
+  JSON, prose-wrapped JSON, missing fields, out-of-range index, wrong
+  types) without needing a live API call.
+- `ideas.service.ts` — one LLM call, system-prompted to (a) only use what
+  the description states, explicitly note assumptions rather than inventing
+  certainty, (b) produce 2-3 *genuinely different* architecture options,
+  not cosmetic variations, (c) recommend exactly one with a reason tied to
+  the description.
+
+**Deliberately narrow**, matching exactly "recommended tech stack" +
+"high-level architecture" from the original spec — not the full PRD
+(personas, exhaustive non-functional requirements), not DB
+schema/API-contract generation, not GitHub Issues creation. Those stay
+deferred until this narrower loop is validated; see the Deferred table.
+
+New surface: `GET /projects` (list, needed for the dashboard — didn't exist
+before, only get-by-id), `/ideas` CRUD-ish endpoints, and three pages —
+`/dashboard` (lists connected repos + ideas), `/create` (idea input),
+`/ideas/[id]` (PRD summary + architecture option cards, recommended one
+highlighted). No embeddings, no persistence beyond one row per generation
+(`ProjectIdea`) — same "don't build machinery you don't have a second use
+for yet" discipline as everything else.
+
+**Real bug found building this, not specific to Ideas:** `req.userId ??
+"dev-user"` was being passed straight into `Project.ownerUserId`, a foreign
+key to `User.id` (a cuid) — `"dev-user"` was never a real row, so any actual
+call to `POST /projects` would have hit a foreign-key violation the moment
+auth-less usage was exercised end-to-end (it hadn't been, until building the
+dashboard's project list required it to work). Fixed with
+`apps/api/src/shared/devUser.ts#getDevUserId()`, which upserts a real `User`
+row and returns its actual id; both `ProjectsController` and
+`IdeasController` use it now.
+
 ## Deferred (explicitly, with reasons)
 
 | Feature | Why deferred |
 |---|---|
-| Project Creation (idea → PRD/schema/API) | No repo to ground it in — still the one feature in the spec that doesn't depend on the Repository Intelligence Engine. |
-| Embeddings / RAG / pgvector | Metadata filtering (Step 9) and manifest pattern-matching (Step 6) still cover every v1.1 need. |
+| DB schema / API contract / auth flow generation from an idea | Narrower slice (PRD summary + architecture options) ships first — see Step 12. Generating a concrete schema/API without a repo to eventually reconcile it against risks producing a spec nobody builds to. |
+| GitHub Issues generation from an idea's roadmap | Same reasoning — also depends on the still-deferred idea→roadmap/milestone breakdown below. |
+| Embeddings / RAG / pgvector | Metadata filtering (Step 9) and manifest pattern-matching (Step 6) still cover every need so far — Step 12 didn't change that, its input is a short description, not a corpus to search. |
 | PRD-generated roadmap / milestone breakdown (Project Creation's roadmap) | `RoadmapItem` now exists and is real, but only sourced from GitHub issues — generating a roadmap from an idea/PRD is still gated on Project Creation, which is still deferred (see above). |
 | Next-task recommendations feeding the roadmap | See the "Deliberately not done" callout in Step 10 — blocked on a real design decision (POST-based accept action), not effort. |
 | Portfolio Mode, Deployment Analyzer | Both plausibly need cross-repo comparison, which is the trigger for normalizing Snapshot Json into real tables (see Step 3) — neither exists yet. |

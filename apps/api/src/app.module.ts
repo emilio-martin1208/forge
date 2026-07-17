@@ -5,8 +5,17 @@ import { GithubModule } from "./github/github.module.js";
 import { ContextPackageModule } from "./context/context-package.module.js";
 import { FeedbackModule } from "./feedback/feedback.module.js";
 import { RoadmapModule } from "./roadmap/roadmap.module.js";
+import { IdeasModule } from "./ideas/ideas.module.js";
 
 @Module({
-  imports: [ProjectsModule, ReadmeModule, GithubModule, ContextPackageModule, FeedbackModule, RoadmapModule],
+  imports: [
+    ProjectsModule,
+    ReadmeModule,
+    GithubModule,
+    ContextPackageModule,
+    FeedbackModule,
+    RoadmapModule,
+    IdeasModule,
+  ],
 })
 export class AppModule {}

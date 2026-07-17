@@ -91,3 +91,32 @@ export interface RoadmapItem {
   createdAt: string;
   updatedAt: string;
 }
+
+// --- Project Creation (idea -> PRD summary + architecture options) ---
+// The one feature not grounded in a connected repo's Snapshot — see
+// docs/architecture.md for why that makes it fundamentally different from
+// everything else in this file.
+
+export interface ArchitectureOption {
+  name: string;
+  stackSummary: string;
+  description: string;
+  tradeoffs: string[];
+  whenToChoose: string;
+}
+
+export interface GenerateIdeaRequest {
+  description: string;
+}
+
+export interface ProjectIdea {
+  id: string;
+  ownerUserId: string;
+  description: string;
+  prdSummary: string;
+  coreFeatures: string[];
+  architectureOptions: ArchitectureOption[];
+  recommendedIndex: number;
+  recommendationRationale: string;
+  createdAt: string;
+}
