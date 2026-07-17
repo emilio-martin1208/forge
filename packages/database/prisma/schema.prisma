@@ -1,0 +1,197 @@
+// Forge — Prisma schema
+// Design note: analyzer output (languages, frameworks, routes, etc.) is stored
+// as Json on RepositorySnapshot rather than normalized into their own tables.
+// v1 only ever reads a snapshot whole (render README, render dashboard) — it
+// never queries "find all projects using React" across snapshots. Normalize
+// this once a cross-repo feature (e.g. Portfolio Mode benchmarking) actually
+// needs to query into these fields; doing it now would be speculative.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  githubId  String   @unique
+  email     String?  @unique
+  name      String?
+  avatarUrl String?
+  createdAt DateTime @default(now())
+
+  projects Project[]
+
+  @@map("users")
+}
+
+model GithubInstallation {
+  id              String   @id @default(cuid())
+  installationId  String   @unique // GitHub App installation id
+  accountLogin    String
+  accountType     String // "User" | "Organization"
+  createdAt       DateTime @default(now())
+
+  projects Project[]
+
+  @@map("github_installations")
+}
+
+model Project {
+  id             String   @id @default(cuid())
+  ownerUserId    String
+  installationId String
+  githubOwner    String
+  githubRepo     String
+  defaultBranch  String   @default("main")
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  owner       User               @relation(fields: [ownerUserId], references: [id], onDelete: Cascade)
+  installation GithubInstallation @relation(fields: [installationId], references: [id], onDelete: Restrict)
+
+  snapshots        RepositorySnapshot[]
+  generatedReadmes GeneratedReadme[]
+  pullRequests     PullRequest[]
+  issues           Issue[]
+  releases         Release[]
+  workflowRuns     WorkflowRun[]
+
+  @@unique([githubOwner, githubRepo])
+  @@index([ownerUserId])
+  @@map("projects")
+}
+
+model RepositorySnapshot {
+  id            String   @id @default(cuid())
+  projectId     String
+  commitSha     String
+  defaultBranch String
+  createdAt     DateTime @default(now())
+
+  fileTree      Json
+  languages     Json
+  frameworks    Json
+  dependencies  Json
+  routes        Json
+  envVars       Json
+  docker        Json
+  ci            Json
+  testing       Json
+  features      Json
+  healthScores  Json
+  referenceFiles Json @default("[]")
+
+  project   Project           @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  readmes   GeneratedReadme[]
+
+  @@index([projectId, createdAt])
+  @@map("repository_snapshots")
+}
+
+// --- GitHub sync: pull requests, issues, releases, workflow runs ---
+// Populated two ways: an initial backfill on project connect (github-sync
+// service, REST list endpoints) and ongoing webhook events. Kept as plain
+// rows, not Json-on-Project, because — unlike RepositorySnapshot's analyzer
+// output — these DO need to be queried individually (list open PRs, find a
+// PR by number to attach a review) rather than always read as one blob.
+
+model PullRequest {
+  id           String    @id @default(cuid())
+  projectId    String
+  number       Int
+  title        String
+  state        String // "open" | "closed"
+  authorLogin  String?
+  headSha      String
+  headBranch   String
+  baseBranch   String
+  mergedAt     DateTime?
+  createdAt    DateTime
+  updatedAt    DateTime
+
+  project Project             @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  reviews PullRequestReview[]
+
+  @@unique([projectId, number])
+  @@map("pull_requests")
+}
+
+model PullRequestReview {
+  id            String   @id @default(cuid())
+  pullRequestId String
+  commitSha     String
+  summary       String
+  findings      Json // structured: [{ category, severity, file, description }]
+  createdAt     DateTime @default(now())
+
+  pullRequest PullRequest @relation(fields: [pullRequestId], references: [id], onDelete: Cascade)
+
+  @@index([pullRequestId, createdAt])
+  @@map("pull_request_reviews")
+}
+
+model Issue {
+  id          String   @id @default(cuid())
+  projectId   String
+  number      Int
+  title       String
+  state       String // "open" | "closed"
+  authorLogin String?
+  body        String?
+  createdAt   DateTime
+  updatedAt   DateTime
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@unique([projectId, number])
+  @@map("issues")
+}
+
+model Release {
+  id          String    @id @default(cuid())
+  projectId   String
+  tagName     String
+  name        String?
+  publishedAt DateTime?
+  syncedAt    DateTime  @default(now())
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@unique([projectId, tagName])
+  @@map("releases")
+}
+
+model WorkflowRun {
+  id             String   @id @default(cuid())
+  projectId      String
+  githubRunId    String
+  workflowName   String?
+  status         String
+  conclusion     String?
+  headSha        String
+  githubCreatedAt DateTime
+  syncedAt       DateTime @default(now())
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@unique([projectId, githubRunId])
+  @@map("workflow_runs")
+}
+
+model GeneratedReadme {
+  id         String   @id @default(cuid())
+  projectId  String
+  snapshotId String
+  markdown   String
+  createdAt  DateTime @default(now())
+
+  project  Project            @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  snapshot RepositorySnapshot @relation(fields: [snapshotId], references: [id], onDelete: Cascade)
+
+  @@index([projectId, createdAt])
+  @@map("generated_readmes")
+}

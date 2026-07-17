@@ -1,0 +1,11 @@
+export { analyzeRepository, type AnalyzeOptions } from "./analyze.js";
+export { walkRepository, type WalkedFile, type WalkResult } from "./walk.js";
+export { detectDependencies } from "./detectors/manifests.js";
+export { detectFrameworks } from "./detectors/frameworks.js";
+export { detectFeatures } from "./detectors/features.js";
+export { detectEnvVars } from "./detectors/envVars.js";
+export { detectDocker, detectCi, detectTesting } from "./detectors/infra.js";
+export { detectLanguages } from "./detectors/languages.js";
+export { detectRoutes } from "./detectors/routes.js";
+export { computeHealthScores } from "./detectors/health.js";
+export { detectReferenceFiles } from "./detectors/referenceFiles.js";
