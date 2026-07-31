@@ -27,7 +27,11 @@
   --color-foreground: var(--foreground);
   --color-muted: var(--muted);
   --color-accent: var(--accent-via);
-  --font-sans: var(--font-geist-sans);
+  /* Styrene B is a licensed commercial typeface — declared as the
+     preference here so it's used automatically if installed locally, but
+     not embedded (no font files available/licensed to redistribute).
+     Falls back to a similar geometric sans if it isn't present. */
+  --font-sans: "Styrene B", "Styrene A", -apple-system, "Helvetica Neue", Arial, sans-serif;
   --font-mono: var(--font-geist-mono);
   --radius-none: 0px;
 }
@@ -58,7 +62,7 @@ body {
     linear-gradient(180deg, var(--background-2), var(--background));
   background-attachment: fixed;
   color: var(--foreground);
-  font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans);
   position: relative;
 }
 

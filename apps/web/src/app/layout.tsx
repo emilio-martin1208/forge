@@ -1,13 +1,8 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist_Mono } from "next/font/google";
 import { Sidebar } from "@/components/Sidebar";
 import { forgeApi } from "@/lib/api";
 import "./globals.css";
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
 
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
@@ -24,19 +19,17 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const [projects, ideas] = await Promise.all([
+  const [projects, ideas, me] = await Promise.all([
     forgeApi.listProjects().catch(() => []),
     forgeApi.listIdeas().catch(() => []),
+    forgeApi.getMe().catch(() => null),
   ]);
 
   return (
-    <html
-      lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
-    >
+    <html lang="en" className={`${geistMono.variable} h-full antialiased`}>
       <body className="min-h-full bg-background text-foreground">
         <div className="flex min-h-screen">
-          <Sidebar projects={projects} ideas={ideas} />
+          <Sidebar projects={projects} ideas={ideas} me={me} />
           <div className="flex-1 flex flex-col min-w-0">{children}</div>
         </div>
       </body>

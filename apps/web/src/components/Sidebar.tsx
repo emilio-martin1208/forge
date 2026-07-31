@@ -2,9 +2,18 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import type { Project, ProjectIdea } from "@forge/types";
+import type { CurrentUser, Project, ProjectIdea } from "@forge/types";
+import { ProfileMenu } from "./ProfileMenu";
 
-export function Sidebar({ projects, ideas }: { projects: Project[]; ideas: ProjectIdea[] }) {
+export function Sidebar({
+  projects,
+  ideas,
+  me,
+}: {
+  projects: Project[];
+  ideas: ProjectIdea[];
+  me: CurrentUser | null;
+}) {
   const pathname = usePathname();
 
   return (
@@ -57,11 +66,7 @@ export function Sidebar({ projects, ideas }: { projects: Project[]; ideas: Proje
         </SidebarSection>
       </nav>
 
-      <div className="p-3">
-        <Link href="/dashboard" className="text-xs text-muted hover:text-foreground transition">
-          Dashboard
-        </Link>
-      </div>
+      <ProfileMenu me={me} />
     </aside>
   );
 }
