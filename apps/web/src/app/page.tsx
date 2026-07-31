@@ -1,6 +1,9 @@
+import { SplashScreen } from "@/components/SplashScreen";
+
 export default function HomePage() {
   return (
     <main className="flex-1 flex flex-col items-center justify-center px-6 text-center gap-6">
+      <SplashScreen />
       <span className="text-sm uppercase tracking-widest text-muted">Forge, by Shinobi Tools — The AI Software Architect</span>
       <h1 className="text-5xl sm:text-6xl font-bold max-w-2xl">
         Don&apos;t generate projects. Generate great engineers.
