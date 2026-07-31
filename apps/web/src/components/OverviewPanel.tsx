@@ -27,7 +27,7 @@ export function OverviewPanel({ dashboard }: { dashboard: HealthDashboardRespons
         <h3 className="text-sm font-medium mb-3">Languages</h3>
         <div className="flex flex-wrap gap-2">
           {snapshot.languages.map((l) => (
-            <span key={l.name} className="rounded-full border border-border px-3 py-1 text-sm text-muted">
+            <span key={l.name} className="gradient-surface px-3 py-1 text-sm text-muted">
               {l.name} · {l.percentage}%
             </span>
           ))}
@@ -38,7 +38,7 @@ export function OverviewPanel({ dashboard }: { dashboard: HealthDashboardRespons
         <h3 className="text-sm font-medium mb-3">Frameworks detected</h3>
         <div className="flex flex-wrap gap-2">
           {snapshot.frameworks.map((f) => (
-            <span key={f.name} className="rounded-full bg-surface border border-border px-3 py-1 text-sm">
+            <span key={f.name} className="gradient-surface px-3 py-1 text-sm">
               {f.name}
               {f.version ? <span className="text-muted"> · {f.version}</span> : null}
             </span>
@@ -52,8 +52,8 @@ export function OverviewPanel({ dashboard }: { dashboard: HealthDashboardRespons
           {snapshot.features.map((f) => (
             <div
               key={f.kind}
-              className={`rounded-md border px-3 py-2 text-sm flex items-center justify-between ${
-                f.detected ? "border-accent/50 bg-accent/10" : "border-border text-muted"
+              className={`px-3 py-2 text-sm flex items-center justify-between ${
+                f.detected ? "gradient-active" : "gradient-surface text-muted"
               }`}
             >
               <span className="capitalize">{f.kind.replace("-", " ")}</span>
@@ -68,11 +68,7 @@ export function OverviewPanel({ dashboard }: { dashboard: HealthDashboardRespons
 
 function ScoreCard({ label, value, highlight }: { label: string; value: number; highlight?: boolean }) {
   return (
-    <div
-      className={`rounded-lg border p-4 flex flex-col gap-1 ${
-        highlight ? "border-accent bg-accent/10" : "border-border bg-surface"
-      }`}
-    >
+    <div className={`p-4 flex flex-col gap-1 ${highlight ? "gradient-active" : "gradient-surface"}`}>
       <span className="text-xs uppercase tracking-wide text-muted capitalize">{label}</span>
       <span className="text-2xl font-semibold">{value}</span>
     </div>

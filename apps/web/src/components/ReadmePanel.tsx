@@ -33,7 +33,7 @@ export function ReadmePanel({ projectId }: { projectId: string }) {
         <button
           onClick={handleGenerate}
           disabled={loading}
-          className="rounded-md bg-accent px-4 py-2 text-sm font-medium text-white hover:opacity-90 transition disabled:opacity-50"
+          className="gradient-accent px-4 py-2 text-sm font-medium text-white hover:opacity-90 transition disabled:opacity-50"
         >
           {loading ? "Generating…" : "Generate README"}
         </button>
@@ -47,11 +47,11 @@ export function ReadmePanel({ projectId }: { projectId: string }) {
         <span className="text-xs text-muted">
           {result.templatedSections.length} templated · {result.narrativeSections.length} AI-narrated
         </span>
-        <button onClick={handleGenerate} disabled={loading} className="text-xs text-accent hover:underline disabled:opacity-50">
+        <button onClick={handleGenerate} disabled={loading} className="text-xs gradient-accent-text hover:underline disabled:opacity-50">
           {loading ? "Regenerating…" : "Regenerate"}
         </button>
       </div>
-      <pre className="rounded-lg border border-border bg-surface p-6 whitespace-pre-wrap text-sm font-mono overflow-x-auto">
+      <pre className="gradient-surface p-6 whitespace-pre-wrap text-sm font-mono overflow-x-auto">
         {result.markdown}
       </pre>
     </div>

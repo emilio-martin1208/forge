@@ -41,14 +41,12 @@ export default async function IdeaDetailPage({ params }: { params: Promise<{ id:
           {idea.architectureOptions.map((option, i) => (
             <div
               key={option.name}
-              className={`rounded-lg border p-5 ${
-                i === idea.recommendedIndex ? "border-accent bg-accent/10" : "border-border bg-surface"
-              }`}
+              className={`p-5 ${i === idea.recommendedIndex ? "gradient-active" : "gradient-surface"}`}
             >
               <div className="flex items-center justify-between mb-2">
                 <h3 className="font-medium">{option.name}</h3>
                 {i === idea.recommendedIndex && (
-                  <span className="text-xs uppercase tracking-wide text-accent">Recommended</span>
+                  <span className="text-xs uppercase tracking-wide gradient-accent-text">Recommended</span>
                 )}
               </div>
               <p className="text-sm text-muted mb-3">{option.stackSummary}</p>

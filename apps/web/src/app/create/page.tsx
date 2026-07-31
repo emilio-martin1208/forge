@@ -25,7 +25,7 @@ export default function CreateIdeaPage() {
 
   return (
     <main className="flex-1 flex flex-col items-center justify-center px-6 gap-6">
-      <div className="w-full max-w-xl rounded-lg border border-border bg-surface p-8">
+      <div className="w-full max-w-xl gradient-surface p-8">
         <h1 className="text-xl font-semibold mb-1">Describe what you want to build</h1>
         <p className="text-sm text-muted mb-6">
           Forge will draft a PRD summary and 2-3 architecture options grounded only in what you
@@ -38,13 +38,13 @@ export default function CreateIdeaPage() {
             onChange={(e) => setDescription(e.target.value)}
             placeholder="e.g. A tool for small teams to split expenses on shared trips, with per-person balances and settle-up suggestions."
             rows={6}
-            className="rounded-md border border-border bg-background px-3 py-2 text-foreground outline-none focus:border-accent resize-none"
+            className="gradient-surface gradient-surface-hover px-3 py-2 text-foreground outline-none resize-none"
           />
           {error && <p className="text-sm text-red-400">{error}</p>}
           <button
             type="submit"
             disabled={submitting || description.trim().length === 0}
-            className="rounded-md bg-accent px-4 py-2 text-sm font-medium text-white hover:opacity-90 transition disabled:opacity-50"
+            className="gradient-accent px-4 py-2 text-sm font-medium text-white hover:opacity-90 transition disabled:opacity-50"
           >
             {submitting ? "Generating…" : "Generate architecture options"}
           </button>

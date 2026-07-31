@@ -8,23 +8,23 @@ export function Sidebar({ projects, ideas }: { projects: Project[]; ideas: Proje
   const pathname = usePathname();
 
   return (
-    <aside className="w-64 shrink-0 border-r border-border bg-surface flex flex-col h-screen sticky top-0">
-      <div className="p-4 border-b border-border">
-        <Link href="/dashboard" className="text-sm font-semibold tracking-tight">
+    <aside className="w-64 shrink-0 gradient-surface flex flex-col h-screen sticky top-0">
+      <div className="p-4">
+        <Link href="/dashboard" className="text-sm font-semibold tracking-tight gradient-accent-text">
           Forge
         </Link>
       </div>
 
-      <div className="p-3 flex flex-col gap-2 border-b border-border">
+      <div className="p-3 flex flex-col gap-2">
         <Link
           href="/create"
-          className="rounded-md bg-accent px-3 py-2 text-sm font-medium text-white hover:opacity-90 transition text-center"
+          className="gradient-accent px-3 py-2 text-sm font-medium text-white hover:opacity-90 transition text-center"
         >
           + New idea
         </Link>
         <Link
           href="/connect"
-          className="rounded-md border border-border px-3 py-2 text-sm hover:bg-background transition text-center"
+          className="gradient-surface gradient-surface-hover px-3 py-2 text-sm text-center"
         >
           Connect repo
         </Link>
@@ -56,7 +56,7 @@ export function Sidebar({ projects, ideas }: { projects: Project[]; ideas: Proje
         </SidebarSection>
       </nav>
 
-      <div className="p-3 border-t border-border">
+      <div className="p-3">
         <Link href="/dashboard" className="text-xs text-muted hover:text-foreground transition">
           Dashboard
         </Link>
@@ -91,8 +91,8 @@ function SidebarLink({ href, active, children }: { href: string; active?: boolea
   return (
     <Link
       href={href}
-      className={`rounded-md px-2 py-1.5 text-sm truncate transition ${
-        active ? "bg-accent/15 text-foreground" : "text-muted hover:bg-background hover:text-foreground"
+      className={`px-2 py-1.5 text-sm truncate transition ${
+        active ? "gradient-active text-foreground" : "text-muted hover:bg-white/5 hover:text-foreground"
       }`}
       title={typeof children === "string" ? children : undefined}
     >

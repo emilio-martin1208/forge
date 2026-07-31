@@ -29,24 +29,23 @@ export function ProjectWorkspace({
 
   return (
     <div className="flex flex-col h-screen">
-      <header className="border-b border-border px-6 py-4">
+      <header className="gradient-surface px-6 py-4">
         <h1 className="text-lg font-semibold">
           {project.githubOwner}/{project.githubRepo}
         </h1>
       </header>
 
-      <nav className="border-b border-border px-6 flex gap-1">
+      <nav className="gradient-surface px-6 flex gap-1">
         {TABS.map((tab) => (
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
-            className={`px-3 py-2.5 text-sm border-b-2 transition ${
-              activeTab === tab
-                ? "border-accent text-foreground"
-                : "border-transparent text-muted hover:text-foreground"
+            className={`px-3 pt-2.5 pb-2 text-sm transition flex flex-col gap-2 ${
+              activeTab === tab ? "text-foreground" : "text-muted hover:text-foreground"
             }`}
           >
             {tab}
+            <span className={`h-0.5 w-full ${activeTab === tab ? "gradient-bar" : "bg-transparent"}`} />
           </button>
         ))}
       </nav>

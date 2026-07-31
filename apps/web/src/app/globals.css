@@ -1,37 +1,98 @@
 @import "tailwindcss";
 
+/* Design language: angular (no border-radius anywhere), no outlines/borders —
+   separation between surfaces comes from gradient contrast, not lines — and
+   every accent/interactive color is a gradient, never a flat fill. */
+
 :root {
-  --background: #0a0a0b;
-  --surface: #111113;
-  --border: #23232a;
+  --background: #08080a;
+  --background-2: #0d0d11;
   --foreground: #ededed;
   --muted: #8b8b93;
-  --accent: #6366f1;
+
+  --accent-from: #6366f1;
+  --accent-via: #8b5cf6;
+  --accent-to: #d946ef;
+
+  --surface-from: #131318;
+  --surface-to: #0b0b0e;
+  --surface-hover-from: #17141f;
+  --surface-hover-to: #0e0c12;
 }
 
 @theme inline {
   --color-background: var(--background);
-  --color-surface: var(--surface);
-  --color-border: var(--border);
   --color-foreground: var(--foreground);
   --color-muted: var(--muted);
-  --color-accent: var(--accent);
+  --color-accent: var(--accent-via);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --radius-none: 0px;
 }
 
 @media (prefers-color-scheme: light) {
   :root {
     --background: #ffffff;
-    --surface: #f7f7f8;
-    --border: #e5e5e8;
+    --background-2: #f5f5f7;
     --foreground: #171717;
     --muted: #6b6b73;
+
+    --surface-from: #f7f6fb;
+    --surface-to: #ffffff;
+    --surface-hover-from: #f0edfa;
+    --surface-hover-to: #fbfaff;
   }
 }
 
+* {
+  border-radius: 0 !important;
+}
+
 body {
-  background: var(--background);
+  background:
+    radial-gradient(1100px 700px at 15% -10%, color-mix(in srgb, var(--accent-from) 14%, transparent), transparent 60%),
+    radial-gradient(900px 600px at 100% 0%, color-mix(in srgb, var(--accent-to) 10%, transparent), transparent 55%),
+    linear-gradient(180deg, var(--background-2), var(--background));
+  background-attachment: fixed;
   color: var(--foreground);
   font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+}
+
+/* Brand gradient — buttons, active states, anything that would otherwise be a flat accent fill */
+.gradient-accent {
+  background-image: linear-gradient(135deg, var(--accent-from), var(--accent-via) 55%, var(--accent-to));
+}
+
+/* Same gradient, clipped to text */
+.gradient-accent-text {
+  background-image: linear-gradient(135deg, var(--accent-from), var(--accent-via) 55%, var(--accent-to));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Panels/cards — replaces flat surface + border with a subtle gradient */
+.gradient-surface {
+  background-image: linear-gradient(160deg, var(--surface-from), var(--surface-to));
+}
+
+.gradient-surface-hover {
+  transition: background-image 150ms ease;
+}
+.gradient-surface-hover:hover,
+.gradient-surface-hover:focus,
+.gradient-surface-hover:focus-within {
+  background-image: linear-gradient(160deg, var(--surface-hover-from), var(--surface-hover-to));
+}
+
+/* Selected/detected state — a low-opacity wash of the brand gradient over a surface */
+.gradient-active {
+  background-image:
+    linear-gradient(135deg, color-mix(in srgb, var(--accent-from) 26%, transparent), color-mix(in srgb, var(--accent-to) 16%, transparent)),
+    linear-gradient(160deg, var(--surface-from), var(--surface-to));
+}
+
+/* Thin gradient bar — active-tab indicator, replaces border-bottom */
+.gradient-bar {
+  background-image: linear-gradient(90deg, var(--accent-from), var(--accent-to));
 }

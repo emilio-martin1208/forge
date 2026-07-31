@@ -12,10 +12,10 @@ export default async function DashboardPage() {
       <header className="flex items-center justify-between">
         <h1 className="text-2xl font-semibold">Dashboard</h1>
         <div className="flex gap-3">
-          <Link href="/create" className="rounded-md bg-accent px-4 py-2 text-sm font-medium text-white hover:opacity-90 transition">
+          <Link href="/create" className="gradient-accent px-4 py-2 text-sm font-medium text-white hover:opacity-90 transition">
             New idea
           </Link>
-          <Link href="/connect" className="rounded-md border border-border px-4 py-2 text-sm hover:bg-surface transition">
+          <Link href="/connect" className="gradient-surface gradient-surface-hover px-4 py-2 text-sm transition">
             Connect repo
           </Link>
         </div>
@@ -31,7 +31,7 @@ export default async function DashboardPage() {
               <Link
                 key={project.id}
                 href={`/projects/${project.id}`}
-                className="rounded-lg border border-border bg-surface p-4 hover:border-accent transition"
+                className="gradient-surface gradient-surface-hover p-4 transition"
               >
                 <p className="font-medium">
                   {project.githubOwner}/{project.githubRepo}
@@ -55,7 +55,7 @@ export default async function DashboardPage() {
               <Link
                 key={idea.id}
                 href={`/ideas/${idea.id}`}
-                className="rounded-lg border border-border bg-surface p-4 hover:border-accent transition"
+                className="gradient-surface gradient-surface-hover p-4 transition"
               >
                 <p className="font-medium line-clamp-1">{idea.description}</p>
                 <p className="text-sm text-muted mt-1">
@@ -72,9 +72,9 @@ export default async function DashboardPage() {
 
 function EmptyState({ message, ctaHref, ctaLabel }: { message: string; ctaHref: string; ctaLabel: string }) {
   return (
-    <div className="rounded-lg border border-dashed border-border p-8 text-center">
+    <div className="gradient-surface p-8 text-center">
       <p className="text-muted mb-3">{message}</p>
-      <Link href={ctaHref} className="text-sm text-accent hover:underline">
+      <Link href={ctaHref} className="text-sm gradient-accent-text hover:underline">
         {ctaLabel} →
       </Link>
     </div>

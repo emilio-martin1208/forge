@@ -55,8 +55,8 @@ export function ChatPanel({ projectId, initialMessages }: { projectId: string; i
         {messages.map((message) => (
           <div
             key={message.id}
-            className={`max-w-[80%] rounded-lg px-4 py-2.5 text-sm whitespace-pre-wrap ${
-              message.role === "user" ? "self-end bg-accent text-white" : "self-start bg-surface border border-border"
+            className={`max-w-[80%] px-4 py-2.5 text-sm whitespace-pre-wrap ${
+              message.role === "user" ? "self-end gradient-accent text-white" : "self-start gradient-surface"
             }`}
           >
             {message.content}
@@ -67,17 +67,17 @@ export function ChatPanel({ projectId, initialMessages }: { projectId: string; i
         <div ref={bottomRef} />
       </div>
 
-      <form onSubmit={handleSend} className="flex gap-2 pt-3 border-t border-border">
+      <form onSubmit={handleSend} className="flex gap-2 pt-3">
         <input
           value={input}
           onChange={(e) => setInput(e.target.value)}
           placeholder="Ask about this repository…"
-          className="flex-1 rounded-md border border-border bg-background px-3 py-2 text-sm outline-none focus:border-accent"
+          className="flex-1 gradient-surface gradient-surface-hover px-3 py-2 text-sm outline-none"
         />
         <button
           type="submit"
           disabled={sending || input.trim().length === 0}
-          className="rounded-md bg-accent px-4 py-2 text-sm font-medium text-white hover:opacity-90 transition disabled:opacity-50"
+          className="gradient-accent px-4 py-2 text-sm font-medium text-white hover:opacity-90 transition disabled:opacity-50"
         >
           Send
         </button>

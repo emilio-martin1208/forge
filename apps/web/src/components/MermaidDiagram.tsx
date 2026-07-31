@@ -11,7 +11,24 @@ export function MermaidDiagram({ source }: { source: string }) {
     let cancelled = false;
 
     import("mermaid").then(async ({ default: mermaid }) => {
-      mermaid.initialize({ startOnLoad: false, theme: "dark", themeVariables: { fontFamily: "inherit" } });
+      mermaid.initialize({
+        startOnLoad: false,
+        theme: "base",
+        themeVariables: {
+          fontFamily: "inherit",
+          // Border color matches fill so node edges disappear instead of
+          // reading as an outline — same "no outlines" rule as the rest of
+          // the UI, applied to what mermaid renders.
+          primaryColor: "#17141f",
+          primaryBorderColor: "#17141f",
+          primaryTextColor: "#ededed",
+          lineColor: "#8b5cf6",
+          background: "transparent",
+          mainBkg: "#17141f",
+          clusterBkg: "#17141f",
+          clusterBorder: "#17141f",
+        },
+      });
       try {
         const { svg } = await mermaid.render(`mermaid-${diagramId}`, source);
         if (!cancelled && containerRef.current) containerRef.current.innerHTML = svg;

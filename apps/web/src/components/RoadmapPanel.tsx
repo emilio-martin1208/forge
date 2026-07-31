@@ -31,8 +31,8 @@ function RoadmapSection({ title, items }: { title: string; items: RoadmapItem[] 
         {items.map((item) => (
           <div
             key={item.id}
-            className={`rounded-md border px-3 py-2 text-sm flex items-center justify-between ${
-              item.status === "done" ? "border-border text-muted" : "border-border bg-surface"
+            className={`px-3 py-2 text-sm flex items-center justify-between gradient-surface ${
+              item.status === "done" ? "text-muted" : ""
             }`}
           >
             <span className={item.status === "done" ? "line-through" : ""}>{item.title}</span>

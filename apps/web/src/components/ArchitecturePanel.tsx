@@ -8,7 +8,7 @@ export function ArchitecturePanel({ architecture }: { architecture: Architecture
 
   return (
     <div className="flex flex-col gap-8">
-      <section className="rounded-lg border border-border bg-surface p-6">
+      <section className="gradient-surface p-6">
         <MermaidDiagram source={architecture.mermaidSource} />
       </section>
 
@@ -17,7 +17,7 @@ export function ArchitecturePanel({ architecture }: { architecture: Architecture
         {architecture.constraints.length > 0 ? (
           <ul className="flex flex-col gap-2">
             {architecture.constraints.map((c, i) => (
-              <li key={i} className="text-sm text-foreground/90 rounded-md border border-border bg-surface px-3 py-2">
+              <li key={i} className="text-sm text-foreground/90 gradient-surface px-3 py-2">
                 {c}
               </li>
             ))}
@@ -31,7 +31,7 @@ export function ArchitecturePanel({ architecture }: { architecture: Architecture
         <h3 className="text-sm font-medium mb-3">Frameworks</h3>
         <div className="flex flex-wrap gap-2">
           {architecture.frameworks.map((f) => (
-            <span key={f.name} className="rounded-full bg-surface border border-border px-3 py-1 text-sm">
+            <span key={f.name} className="gradient-surface px-3 py-1 text-sm">
               {f.name}
               {f.version ? <span className="text-muted"> · {f.version}</span> : null}
             </span>

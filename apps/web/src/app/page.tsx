@@ -13,13 +13,13 @@ export default function HomePage() {
       <div className="flex gap-3">
         <a
           href="/connect"
-          className="rounded-md bg-accent px-5 py-2.5 text-sm font-medium text-white hover:opacity-90 transition"
+          className="gradient-accent px-5 py-2.5 text-sm font-medium text-white hover:opacity-90 transition"
         >
           Connect a repository
         </a>
         <a
           href="/create"
-          className="rounded-md border border-border px-5 py-2.5 text-sm font-medium hover:bg-surface transition"
+          className="gradient-surface gradient-surface-hover px-5 py-2.5 text-sm font-medium transition"
         >
           Start from an idea
         </a>

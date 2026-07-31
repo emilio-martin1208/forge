@@ -27,7 +27,7 @@ export default function ConnectPage() {
 
   return (
     <main className="flex-1 flex flex-col items-center justify-center px-6 gap-6">
-      <div className="w-full max-w-md rounded-lg border border-border bg-surface p-8">
+      <div className="w-full max-w-md gradient-surface p-8">
         <h1 className="text-xl font-semibold mb-1">Connect a repository</h1>
         <p className="text-sm text-muted mb-6">
           Requires a Forge GitHub App installation. Until the install callback is wired up (see
@@ -41,7 +41,7 @@ export default function ConnectPage() {
           <button
             type="submit"
             disabled={submitting}
-            className="rounded-md bg-accent px-4 py-2 text-sm font-medium text-white hover:opacity-90 transition disabled:opacity-50"
+            className="gradient-accent px-4 py-2 text-sm font-medium text-white hover:opacity-90 transition disabled:opacity-50"
           >
             {submitting ? "Connecting…" : "Connect"}
           </button>
@@ -60,7 +60,7 @@ function Field(props: { label: string; value: string; onChange: (v: string) => v
         value={props.value}
         onChange={(e) => props.onChange(e.target.value)}
         placeholder={props.placeholder}
-        className="rounded-md border border-border bg-background px-3 py-2 text-foreground outline-none focus:border-accent"
+        className="gradient-surface gradient-surface-hover px-3 py-2 text-foreground outline-none"
       />
     </label>
   );
