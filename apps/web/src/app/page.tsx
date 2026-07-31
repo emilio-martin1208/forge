@@ -24,6 +24,14 @@ export default function HomePage() {
           Start from an idea
         </a>
       </div>
+      <a
+        href="https://github.com/emilio-martin1208/shinobi"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="text-xs text-muted hover:underline mt-6"
+      >
+        Also from Shinobi Tools — Shinobi, video → clips →
+      </a>
     </main>
   );
 }

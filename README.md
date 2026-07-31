@@ -105,3 +105,8 @@ npm run typecheck           # turbo run typecheck, all workspaces
 
 All intentional — see the "Deferred" table in
 [docs/architecture.md](docs/architecture.md).
+
+## Related projects
+
+Also from Shinobi Tools: [**Shinobi**](https://github.com/emilio-martin1208/shinobi) —
+turns one long-form video into ready-to-post vertical clips, automatically.
