@@ -103,6 +103,16 @@ export interface FileTreeSummary {
   totalDirectories: number;
   ignoredFileCount: number;
   topLevelEntries: string[];
+  /**
+   * Every analyzed file's relative path, capped at MAX_FILE_TREE_PATHS
+   * (repository-engine/src/walk.ts) so a pathologically large repo doesn't
+   * bloat the Snapshot — the folders UI degrades to "truncated" rather than
+   * failing. This is the one place raw paths are captured in bulk; every
+   * other detector still only lists paths relevant to what it found.
+   */
+  allFiles: string[];
+  /** True if allFiles was capped and doesn't represent every file. */
+  allFilesTruncated: boolean;
 }
 
 /**

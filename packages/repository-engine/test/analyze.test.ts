@@ -95,6 +95,13 @@ describe("analyzeRepository", () => {
     expect(snapshot.fileTree.topLevelEntries).not.toContain("node_modules");
   });
 
+  it("captures every analyzed file's path for the folder tree, untruncated for this small fixture", () => {
+    expect(snapshot.fileTree.allFiles).toContain("app/api/health/route.ts");
+    expect(snapshot.fileTree.allFiles).toContain("src/server/index.ts");
+    expect(snapshot.fileTree.allFiles.length).toBe(snapshot.fileTree.totalFiles);
+    expect(snapshot.fileTree.allFilesTruncated).toBe(false);
+  });
+
   it("captures prisma/schema.prisma as a reference file", () => {
     const schema = snapshot.referenceFiles.find((f) => f.path === "prisma/schema.prisma");
     expect(schema).toBeDefined();

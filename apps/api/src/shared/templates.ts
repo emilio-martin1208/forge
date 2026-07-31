@@ -44,18 +44,27 @@ export function renderEnvVarsTable(snapshot: RepositorySnapshot): string {
   return [header, ...rows].join("\n");
 }
 
-export function renderArchitectureMermaid(snapshot: RepositorySnapshot): string {
+/**
+ * Raw mermaid source, no markdown fence — used both by renderArchitectureMermaid
+ * (for embedding in README/context markdown) and directly by the /architecture
+ * endpoint (for client-side rendering with the mermaid.js library, which wants
+ * the bare diagram source, not a fenced code block).
+ */
+export function buildArchitectureMermaidSource(snapshot: RepositorySnapshot): string {
   const frontend = snapshot.frameworks.find((f) => f.category === "frontend")?.name;
   const backend = snapshot.frameworks.find((f) => f.category === "backend")?.name;
   const orm = snapshot.frameworks.find((f) => f.category === "orm")?.name;
 
-  const lines = ["```mermaid", "flowchart TD"];
+  const lines = ["flowchart TD"];
   if (frontend) lines.push(`  A[${frontend}] --> B`);
   lines.push(`  B[API] --> C${orm ? `[${orm}]` : ""}`);
   if (backend && !frontend) lines.push(`  A2[${backend}] --> C`);
   lines.push("  C --> D[(Database)]");
-  lines.push("```");
   return lines.join("\n");
+}
+
+export function renderArchitectureMermaid(snapshot: RepositorySnapshot): string {
+  return ["```mermaid", buildArchitectureMermaidSource(snapshot), "```"].join("\n");
 }
 
 export function renderHealthScores(snapshot: RepositorySnapshot): string {

@@ -1,4 +1,4 @@
-import type { RepositorySnapshot } from "./snapshot.js";
+import type { FrameworkDetection, RepositorySnapshot } from "./snapshot.js";
 
 export interface ConnectRepositoryRequest {
   installationId: string;
@@ -52,6 +52,12 @@ export interface ContextPackageResponse {
   knownIssuesMd: string;
   taskMd: string;
   relevantFiles: string[];
+}
+
+export interface ArchitectureView {
+  mermaidSource: string;
+  constraints: string[];
+  frameworks: FrameworkDetection[];
 }
 
 export interface CodexTask {
@@ -119,4 +125,21 @@ export interface ProjectIdea {
   recommendedIndex: number;
   recommendationRationale: string;
   createdAt: string;
+}
+
+// --- Chat ---
+// Same grounding discipline as every other LLM call site — the system
+// prompt restricts the model to the project's Snapshot facts. This is that
+// pattern with persisted conversational history instead of one-shot output.
+
+export interface ChatMessage {
+  id: string;
+  projectId: string;
+  role: "user" | "assistant";
+  content: string;
+  createdAt: string;
+}
+
+export interface SendChatMessageRequest {
+  message: string;
 }

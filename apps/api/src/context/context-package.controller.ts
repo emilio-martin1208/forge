@@ -25,4 +25,9 @@ export class ContextPackageController {
   codexTask(@Param("id") id: string, @Body() body: GenerateContextPackageRequest) {
     return this.contextPackage.generateCodexTask(id, body);
   }
+
+  @Get("architecture")
+  architecture(@Param("id") id: string) {
+    return this.contextPackage.getArchitectureView(id);
+  }
 }

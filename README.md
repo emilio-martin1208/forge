@@ -13,6 +13,7 @@ the repo, not hallucinated.
 | v1.1 | GitHub sync (PRs, issues, releases, Actions runs) + AI code review on PR open |
 | v1.1 | Context Package Generator for Claude Code / Cursor / Codex + Agent Feedback Loop / next-task recommendation |
 | v1.2 | Project Creation — describe an idea → PRD summary + 2-3 architecture options, plus a dashboard listing connected repos and ideas |
+| v1.3 | Sidebar app shell + tabbed project workspace (Chat / Overview / Architecture / Folders / Roadmap / README) — Chat is grounded in the Snapshot with persisted history; Architecture renders a real diagram; Folders is a real file tree |
 
 See [docs/architecture.md](docs/architecture.md) for the full design
 rationale, what's deferred, and why — including why this is one
@@ -22,9 +23,11 @@ rationale, what's deferred, and why — including why this is one
 
 ```
 apps/
-  web/                  Next.js — dashboard, connect, create idea, project/idea detail
+  web/                  Next.js — sidebar shell + tabbed project workspace
+                         (Chat/Overview/Architecture/Folders/Roadmap/README),
+                         dashboard, connect, create idea
   api/                  Nest.js — REST API: projects, ideas, readme, context packages,
-                         feedback loop, roadmap, GitHub webhooks + sync
+                         feedback loop, roadmap, chat, GitHub webhooks + sync
   worker/                BullMQ worker — clone+analyze, PR review jobs
 
 packages/
@@ -48,6 +51,9 @@ GET  /projects/:id/health               health dashboard
 POST /projects/:id/readme               generate README
 GET  /projects/:id/feedback             agent feedback loop / next-task recommendation
 GET  /projects/:id/roadmap              roadmap items (sourced from GitHub issues today)
+GET  /projects/:id/architecture         mermaid diagram source + derived constraints (no LLM call)
+GET  /projects/:id/chat                 chat message history
+POST /projects/:id/chat                 { message } -> assistant reply, grounded in the Snapshot
 POST /projects/:id/context-package      architecture.md / database.md / coding-standards.md / known-issues.md / task.md
 GET  /projects/:id/cursor-rules         .cursorrules
 POST /projects/:id/codex-task           Codex-format structured task JSON

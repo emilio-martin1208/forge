@@ -6,6 +6,7 @@ import { ContextPackageModule } from "./context/context-package.module.js";
 import { FeedbackModule } from "./feedback/feedback.module.js";
 import { RoadmapModule } from "./roadmap/roadmap.module.js";
 import { IdeasModule } from "./ideas/ideas.module.js";
+import { ChatModule } from "./chat/chat.module.js";
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { IdeasModule } from "./ideas/ideas.module.js";
     FeedbackModule,
     RoadmapModule,
     IdeasModule,
+    ChatModule,
   ],
 })
 export class AppModule {}

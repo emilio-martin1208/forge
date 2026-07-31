@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import { Nav } from "@/components/Nav";
+import { Sidebar } from "@/components/Sidebar";
+import { forgeApi } from "@/lib/api";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -18,19 +19,26 @@ export const metadata: Metadata = {
   description: "Forge transforms a software idea into a complete engineering plan and stays synchronized with your GitHub repository.",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const [projects, ideas] = await Promise.all([
+    forgeApi.listProjects().catch(() => []),
+    forgeApi.listIdeas().catch(() => []),
+  ]);
+
   return (
     <html
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col bg-background text-foreground">
-        <Nav />
-        {children}
+      <body className="min-h-full bg-background text-foreground">
+        <div className="flex min-h-screen">
+          <Sidebar projects={projects} ideas={ideas} />
+          <div className="flex-1 flex flex-col min-w-0">{children}</div>
+        </div>
       </body>
     </html>
   );

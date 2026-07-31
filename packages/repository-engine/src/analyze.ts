@@ -19,6 +19,11 @@ export interface AnalyzeOptions {
   defaultBranch?: string;
 }
 
+// Caps how many file paths the folders UI gets to build a tree from. Chosen
+// as "comfortably covers a real project, not a pathological monorepo" — a
+// truncated tree is a fine degradation, an unbounded Json column isn't.
+const MAX_FILE_TREE_PATHS = 5000;
+
 function resolveCommitSha(rootDir: string, override?: string): string {
   if (override) return override;
   try {
@@ -68,6 +73,8 @@ export function analyzeRepository(options: AnalyzeOptions): Omit<RepositorySnaps
       totalDirectories: walkResult.totalDirectories,
       ignoredFileCount: walkResult.ignoredFileCount,
       topLevelEntries: walkResult.topLevelEntries,
+      allFiles: walkResult.files.slice(0, MAX_FILE_TREE_PATHS).map((f) => f.path),
+      allFilesTruncated: walkResult.files.length > MAX_FILE_TREE_PATHS,
     },
     languages,
     frameworks,

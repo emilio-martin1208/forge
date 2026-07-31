@@ -1,10 +1,14 @@
 import type {
+  ArchitectureView,
+  ChatMessage,
   ConnectRepositoryRequest,
   GenerateIdeaRequest,
   GenerateReadmeResponse,
   HealthDashboardResponse,
   Project,
   ProjectIdea,
+  RoadmapItem,
+  SendChatMessageRequest,
 } from "@forge/types";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000";
@@ -30,6 +34,11 @@ export const forgeApi = {
     apiFetch<HealthDashboardResponse>(`/projects/${projectId}/health`),
   generateReadme: (projectId: string) =>
     apiFetch<GenerateReadmeResponse>(`/projects/${projectId}/readme`, { method: "POST" }),
+  getArchitecture: (projectId: string) => apiFetch<ArchitectureView>(`/projects/${projectId}/architecture`),
+  getRoadmap: (projectId: string) => apiFetch<RoadmapItem[]>(`/projects/${projectId}/roadmap`),
+  listChatMessages: (projectId: string) => apiFetch<ChatMessage[]>(`/projects/${projectId}/chat`),
+  sendChatMessage: (projectId: string, body: SendChatMessageRequest) =>
+    apiFetch<ChatMessage>(`/projects/${projectId}/chat`, { method: "POST", body: JSON.stringify(body) }),
   generateIdea: (body: GenerateIdeaRequest) =>
     apiFetch<ProjectIdea>("/ideas", { method: "POST", body: JSON.stringify(body) }),
   listIdeas: () => apiFetch<ProjectIdea[]>("/ideas"),

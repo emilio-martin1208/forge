@@ -319,6 +319,62 @@ dashboard's project list required it to work). Fixed with
 row and returns its actual id; both `ProjectsController` and
 `IdeasController` use it now.
 
+## Step 13 — App shell redesign + Chat
+
+The UI went from a handful of disconnected pages (top nav, separate routes
+per feature) to a persistent sidebar + tabbed project workspace —
+Gemini/Claude-Code-shaped: a left rail listing every connected repo and
+idea (`components/Sidebar.tsx`, data fetched once in the root layout), and
+a single `/projects/[id]` route whose six tabs (Chat, Overview,
+Architecture, Folders, Roadmap, README) are client-side tab state, not
+separate page loads. The standalone `/projects/[id]/readme` route is gone —
+folded into the README tab (`ReadmePanel`), now manually triggered rather
+than auto-generating on mount, since an LLM call shouldn't fire just from
+switching tabs.
+
+**Chat is the one genuinely new feature here** — everything else in this
+step is UI reorganization plus two views that reuse data Forge already
+computes:
+
+- **Architecture tab** — zero new LLM calls. `buildArchitectureMermaidSource`
+  was split out of the existing markdown renderer (which still wraps it in
+  a fence for README/context-package output) so the same diagram logic
+  feeds a new `GET /projects/:id/architecture` endpoint returning structured
+  data instead of a markdown blob. The frontend renders it for real with
+  the `mermaid` package (`MermaidDiagram.tsx`) instead of showing raw
+  diagram source as text.
+- **Folders tab** — required a real Snapshot expansion:
+  `fileTree.allFiles` (every analyzed file's path, capped at 5,000, with
+  `allFilesTruncated` set past that) alongside the existing
+  `topLevelEntries`. The tree itself is reconstructed client-side from the
+  flat path list (`lib/buildFileTree.ts`, pure and tested — 6 cases) rather
+  than storing a nested tree server-side, since nothing else needs tree
+  shape, just the flat list.
+- **Chat** — `ChatMessage` model (persisted history, not stateless
+  request/response) plus one more grounded LLM call site
+  (`chat.service.ts`), same discipline as narrative.ts / reviewPullRequest.ts
+  / feedback rationale: the system prompt hands the model a compact
+  Snapshot summary (`summarizeSnapshotForChat.ts` — languages, frameworks,
+  routes capped at 50, detected features only, non-dev dependencies, env
+  var names, test/health/docker/CI facts) and is told explicitly to say
+  "not visible in the current snapshot" rather than guess. The API key
+  check happens **before** persisting the user's message, not after —
+  a missing key is a static config problem, not a transient one, so there's
+  no reason to leave unanswered messages sitting in history on every
+  attempt.
+
+**Real bug caught by actually clicking through it in the browser, not just
+typechecking:** the seeded demo snapshot predated the `allFiles` field —
+it's stored as Json, so an old row simply doesn't have a key that didn't
+exist when it was written. `buildFileTree(undefined)` crashed with "paths
+is not iterable." Fixed by making the tree builder degrade to an empty tree
+for non-array input instead of assuming the shape, plus a regression test
+for exactly this case. This will keep happening every time the Snapshot
+shape grows — Json columns don't get free schema migration the way SQL
+columns do, and this codebase will keep evolving the Snapshot shape, so
+"missing key" needs to stay a handled case at every consumer, not a
+one-time fix.
+
 ## Deferred (explicitly, with reasons)
 
 | Feature | Why deferred |

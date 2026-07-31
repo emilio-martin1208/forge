@@ -1,13 +1,18 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { prisma } from "@forge/database";
 import type {
+  ArchitectureView,
   CodexTask,
   ContextPackageResponse,
   GenerateContextPackageRequest,
   RepositorySnapshot,
 } from "@forge/types";
 import { toSnapshotDto } from "../shared/snapshotMapper.js";
-import { renderArchitectureMermaid, renderDependencyTable } from "../shared/templates.js";
+import {
+  buildArchitectureMermaidSource,
+  renderArchitectureMermaid,
+  renderDependencyTable,
+} from "../shared/templates.js";
 import { deriveArchitectureConstraints, deriveCodingStandards, deriveKnownIssues } from "./constraints.js";
 import { selectRelevantFiles } from "./relevance.js";
 
@@ -126,6 +131,18 @@ export class ContextPackageService {
         ? `- All new logic requires tests using ${snapshot.testing.frameworks.join(", ")}.`
         : "- No test framework detected — flag this to the user rather than silently skipping tests.",
     ].join("\n");
+  }
+
+  /** No LLM call — same deterministic derivation the README/context-package
+   * pipeline already uses, just returned as structured data instead of
+   * markdown so the web UI can render a real diagram, not a text blob. */
+  async getArchitectureView(projectId: string): Promise<ArchitectureView> {
+    const snapshot = await this.getLatestSnapshot(projectId);
+    return {
+      mermaidSource: buildArchitectureMermaidSource(snapshot),
+      constraints: deriveArchitectureConstraints(snapshot),
+      frameworks: snapshot.frameworks,
+    };
   }
 
   async generateCodexTask(projectId: string, request: GenerateContextPackageRequest): Promise<CodexTask> {

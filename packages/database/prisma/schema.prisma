@@ -83,6 +83,7 @@ model Project {
   releases         Release[]
   workflowRuns     WorkflowRun[]
   roadmapItems     RoadmapItem[]
+  chatMessages     ChatMessage[]
 
   @@unique([githubOwner, githubRepo])
   @@index([ownerUserId])
@@ -196,6 +197,24 @@ model RoadmapItem {
   @@unique([projectId, source, sourceIssueNumber])
   @@index([projectId, status])
   @@map("roadmap_items")
+}
+
+// Persisted chat history per project — same grounding discipline as every
+// other LLM call site (readme narrative, PR review, feedback rationale,
+// idea generation): the system prompt restricts the model to the project's
+// Snapshot facts, this table just gives that a real conversational history
+// instead of one-shot generation.
+model ChatMessage {
+  id        String   @id @default(cuid())
+  projectId String
+  role      String // "user" | "assistant"
+  content   String
+  createdAt DateTime @default(now())
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId, createdAt])
+  @@map("chat_messages")
 }
 
 model Release {
