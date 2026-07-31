@@ -375,6 +375,55 @@ columns do, and this codebase will keep evolving the Snapshot shape, so
 "missing key" needs to stay a handled case at every consumer, not a
 one-time fix.
 
+## Step 14 — Visual redesign + activity dashboard
+
+Two unrelated changes landed together because both came from direct design
+feedback on Step 13's first pass.
+
+**Visual language:** angular (no `rounded-*` anywhere, plus a global
+`border-radius: 0 !important` backstop), no borders (surface separation
+comes from gradient contrast, not divider lines), every accent color a
+gradient (`gradient-accent` / `gradient-surface` / `gradient-active` /
+`gradient-bar` utility classes in `globals.css`), with a second pass adding
+back visual weight after the first version read as too sparse — stronger
+gradient contrast, glow shadows on interactive elements, bolder type,
+a faint noise texture so large gradient fields don't look sterile. Even the
+mermaid architecture diagram's theme was touched: `primaryBorderColor` set
+equal to `primaryColor` so node edges disappear instead of drawing a solid
+outline mermaid's own default theme would otherwise impose.
+
+**Activity dashboard:** greeting + streak stats + a GitHub/Claude-Code-style
+contribution calendar + a language-breakdown bar chart, all on `/dashboard`.
+The important constraint: **there is no separate "usage tracking" system.**
+`ActivityService` (`apps/api/src/activity/`) derives activity entirely from
+timestamps that already exist for other reasons — `Project.createdAt`,
+`RepositorySnapshot.createdAt`, `ChatMessage.createdAt`,
+`GeneratedReadme.createdAt`, `ProjectIdea.createdAt` — grouped by UTC date.
+This is the same "don't build machinery you don't have a second use for"
+discipline as everything else: adding a dedicated activity-log table would
+mean instrumenting every write path a second time for a feature that's
+just a different view over data already being written.
+
+Two pure, tested functions do the actual logic:
+- `computeStreaks.ts` — current/longest streak from a set of active dates.
+  "Current streak" counts backward from today if today has activity, or
+  from yesterday if it doesn't yet — a streak that's still alive shouldn't
+  read as broken just because today isn't over.
+- `aggregateLanguages.ts` — merges language line-counts across every
+  project's *latest* snapshot into one cross-project breakdown.
+
+**Honest tradeoff, not a bug:** on a fresh account this data is sparse (a
+couple of active days, not months of green squares) because it's real
+history, not seeded/fabricated demo data. That's consistent with never
+having faked data anywhere else in this build — the "what should this show
+on day one" answer is "the truth, even if it's small," not "something that
+looks impressive."
+
+`GET /me` was added alongside this purely to support the greeting (name to
+say "Good afternoon, ___" to) — trivial, but a genuinely new endpoint, not
+folded into an existing one, since "who is the current user" is a distinct
+concept from any single feature.
+
 ## Deferred (explicitly, with reasons)
 
 | Feature | Why deferred |

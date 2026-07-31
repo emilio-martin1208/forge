@@ -1,7 +1,9 @@
 import type {
+  ActivityResponse,
   ArchitectureView,
   ChatMessage,
   ConnectRepositoryRequest,
+  CurrentUser,
   GenerateIdeaRequest,
   GenerateReadmeResponse,
   HealthDashboardResponse,
@@ -43,4 +45,6 @@ export const forgeApi = {
     apiFetch<ProjectIdea>("/ideas", { method: "POST", body: JSON.stringify(body) }),
   listIdeas: () => apiFetch<ProjectIdea[]>("/ideas"),
   getIdea: (ideaId: string) => apiFetch<ProjectIdea>(`/ideas/${ideaId}`),
+  getMe: () => apiFetch<CurrentUser>("/me"),
+  getActivity: () => apiFetch<ActivityResponse>("/activity"),
 };

@@ -1,4 +1,4 @@
-# Forge — The AI Software Architect
+# Forge — by Shinobi Tools
 
 Forge builds a deterministic understanding of a GitHub repository and
 generates documentation, project-health insight, and grounded context
@@ -14,6 +14,7 @@ the repo, not hallucinated.
 | v1.1 | Context Package Generator for Claude Code / Cursor / Codex + Agent Feedback Loop / next-task recommendation |
 | v1.2 | Project Creation — describe an idea → PRD summary + 2-3 architecture options, plus a dashboard listing connected repos and ideas |
 | v1.3 | Sidebar app shell + tabbed project workspace (Chat / Overview / Architecture / Folders / Roadmap / README) — Chat is grounded in the Snapshot with persisted history; Architecture renders a real diagram; Folders is a real file tree |
+| v1.4 | Angular/gradient visual redesign + a real activity dashboard — greeting, streak stats, GitHub-style contribution calendar, and a language-breakdown chart, all derived from real timestamps already in the database, not a separate tracked concept |
 
 See [docs/architecture.md](docs/architecture.md) for the full design
 rationale, what's deferred, and why — including why this is one
@@ -62,6 +63,10 @@ POST /webhooks/github                   push, pull_request, issues, release, wor
 GET  /ideas                             list your project ideas
 POST /ideas                             { description } -> PRD summary + architecture options
 GET  /ideas/:id                         one idea's full generated output
+
+GET  /me                                current user (name, for the dashboard greeting)
+GET  /activity                          streaks + contribution calendar + language breakdown,
+                                         derived from real Project/Snapshot/Chat/Readme/Idea timestamps
 ```
 
 ## Local development

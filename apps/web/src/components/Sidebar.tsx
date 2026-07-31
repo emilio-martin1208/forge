@@ -10,8 +10,9 @@ export function Sidebar({ projects, ideas }: { projects: Project[]; ideas: Proje
   return (
     <aside className="w-64 shrink-0 gradient-surface flex flex-col h-screen sticky top-0">
       <div className="p-4">
-        <Link href="/dashboard" className="text-sm font-semibold tracking-tight gradient-accent-text">
-          Forge
+        <Link href="/dashboard" className="block">
+          <span className="text-lg font-bold tracking-tight gradient-accent-text">Forge</span>
+          <span className="block text-[10px] uppercase tracking-widest text-muted mt-0.5">by Shinobi Tools</span>
         </Link>
       </div>
 

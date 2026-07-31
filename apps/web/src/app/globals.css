@@ -2,22 +2,24 @@
 
 /* Design language: angular (no border-radius anywhere), no outlines/borders —
    separation between surfaces comes from gradient contrast, not lines — and
-   every accent/interactive color is a gradient, never a flat fill. */
+   every accent/interactive color is a gradient, never a flat fill. Bold, not
+   sparse: strong contrast between surfaces, saturated gradients, glow on
+   interactive elements, a bit of grain so it doesn't read as sterile. */
 
 :root {
-  --background: #08080a;
-  --background-2: #0d0d11;
-  --foreground: #ededed;
-  --muted: #8b8b93;
+  --background: #060608;
+  --background-2: #100b16;
+  --foreground: #f5f5f7;
+  --muted: #9d9ca8;
 
-  --accent-from: #6366f1;
-  --accent-via: #8b5cf6;
-  --accent-to: #d946ef;
+  --accent-from: #6d5bff;
+  --accent-via: #a855f7;
+  --accent-to: #ec4899;
 
-  --surface-from: #131318;
-  --surface-to: #0b0b0e;
-  --surface-hover-from: #17141f;
-  --surface-hover-to: #0e0c12;
+  --surface-from: #1c1826;
+  --surface-to: #100d16;
+  --surface-hover-from: #251f35;
+  --surface-hover-to: #150f1e;
 }
 
 @theme inline {
@@ -33,14 +35,14 @@
 @media (prefers-color-scheme: light) {
   :root {
     --background: #ffffff;
-    --background-2: #f5f5f7;
+    --background-2: #f0edf9;
     --foreground: #171717;
     --muted: #6b6b73;
 
-    --surface-from: #f7f6fb;
+    --surface-from: #efe9fb;
     --surface-to: #ffffff;
-    --surface-hover-from: #f0edfa;
-    --surface-hover-to: #fbfaff;
+    --surface-hover-from: #e4daf7;
+    --surface-hover-to: #faf8ff;
   }
 }
 
@@ -50,17 +52,39 @@
 
 body {
   background:
-    radial-gradient(1100px 700px at 15% -10%, color-mix(in srgb, var(--accent-from) 14%, transparent), transparent 60%),
-    radial-gradient(900px 600px at 100% 0%, color-mix(in srgb, var(--accent-to) 10%, transparent), transparent 55%),
+    radial-gradient(1300px 800px at 12% -15%, color-mix(in srgb, var(--accent-from) 30%, transparent), transparent 60%),
+    radial-gradient(1100px 700px at 105% -5%, color-mix(in srgb, var(--accent-to) 26%, transparent), transparent 55%),
+    radial-gradient(900px 900px at 50% 110%, color-mix(in srgb, var(--accent-via) 16%, transparent), transparent 60%),
     linear-gradient(180deg, var(--background-2), var(--background));
   background-attachment: fixed;
   color: var(--foreground);
   font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+  position: relative;
+}
+
+/* Faint grain so large gradient fields don't look flat/sterile */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.05;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+h1, h2, h3 {
+  font-weight: 600;
+  letter-spacing: -0.01em;
 }
 
 /* Brand gradient — buttons, active states, anything that would otherwise be a flat accent fill */
 .gradient-accent {
   background-image: linear-gradient(135deg, var(--accent-from), var(--accent-via) 55%, var(--accent-to));
+  box-shadow: 0 0 0 1px transparent, 0 8px 30px -8px color-mix(in srgb, var(--accent-via) 65%, transparent);
+}
+.gradient-accent:hover {
+  box-shadow: 0 0 0 1px transparent, 0 10px 40px -6px color-mix(in srgb, var(--accent-via) 85%, transparent);
 }
 
 /* Same gradient, clipped to text */
@@ -71,28 +95,50 @@ body {
   color: transparent;
 }
 
-/* Panels/cards — replaces flat surface + border with a subtle gradient */
+/* Panels/cards — replaces flat surface + border with a bold gradient, not a whisper of one */
 .gradient-surface {
   background-image: linear-gradient(160deg, var(--surface-from), var(--surface-to));
+  box-shadow: inset 0 1px 0 0 color-mix(in srgb, white 6%, transparent);
 }
 
 .gradient-surface-hover {
-  transition: background-image 150ms ease;
+  transition: background-image 150ms ease, box-shadow 150ms ease;
 }
 .gradient-surface-hover:hover,
 .gradient-surface-hover:focus,
 .gradient-surface-hover:focus-within {
   background-image: linear-gradient(160deg, var(--surface-hover-from), var(--surface-hover-to));
+  box-shadow: inset 0 1px 0 0 color-mix(in srgb, white 10%, transparent), 0 0 24px -10px var(--accent-via);
 }
 
-/* Selected/detected state — a low-opacity wash of the brand gradient over a surface */
+/* Selected/detected state — a vivid wash of the brand gradient over a surface, plus a glow */
 .gradient-active {
   background-image:
-    linear-gradient(135deg, color-mix(in srgb, var(--accent-from) 26%, transparent), color-mix(in srgb, var(--accent-to) 16%, transparent)),
+    linear-gradient(135deg, color-mix(in srgb, var(--accent-from) 45%, transparent), color-mix(in srgb, var(--accent-to) 32%, transparent)),
     linear-gradient(160deg, var(--surface-from), var(--surface-to));
+  box-shadow: inset 0 1px 0 0 color-mix(in srgb, white 12%, transparent), 0 0 30px -12px var(--accent-via);
 }
 
 /* Thin gradient bar — active-tab indicator, replaces border-bottom */
 .gradient-bar {
   background-image: linear-gradient(90deg, var(--accent-from), var(--accent-to));
+  box-shadow: 0 0 12px 0 color-mix(in srgb, var(--accent-via) 80%, transparent);
+}
+
+/* Activity calendar intensity tiers (0-4), GitHub/Claude-Code-contribution-grid style */
+.activity-0 {
+  background-color: color-mix(in srgb, white 5%, transparent);
+}
+.activity-1 {
+  background-image: linear-gradient(135deg, color-mix(in srgb, var(--accent-from) 35%, transparent), color-mix(in srgb, var(--accent-to) 25%, transparent));
+}
+.activity-2 {
+  background-image: linear-gradient(135deg, color-mix(in srgb, var(--accent-from) 55%, transparent), color-mix(in srgb, var(--accent-to) 45%, transparent));
+}
+.activity-3 {
+  background-image: linear-gradient(135deg, color-mix(in srgb, var(--accent-from) 78%, transparent), color-mix(in srgb, var(--accent-to) 68%, transparent));
+}
+.activity-4 {
+  background-image: linear-gradient(135deg, var(--accent-from), var(--accent-to));
+  box-shadow: 0 0 8px -2px var(--accent-via);
 }

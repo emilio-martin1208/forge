@@ -7,6 +7,8 @@ import { FeedbackModule } from "./feedback/feedback.module.js";
 import { RoadmapModule } from "./roadmap/roadmap.module.js";
 import { IdeasModule } from "./ideas/ideas.module.js";
 import { ChatModule } from "./chat/chat.module.js";
+import { MeModule } from "./me/me.module.js";
+import { ActivityModule } from "./activity/activity.module.js";
 
 @Module({
   imports: [
@@ -18,6 +20,8 @@ import { ChatModule } from "./chat/chat.module.js";
     RoadmapModule,
     IdeasModule,
     ChatModule,
+    MeModule,
+    ActivityModule,
   ],
 })
 export class AppModule {}

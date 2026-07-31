@@ -143,3 +143,36 @@ export interface ChatMessage {
 export interface SendChatMessageRequest {
   message: string;
 }
+
+// --- Current user + activity ---
+// Activity is computed from real timestamps already in the database
+// (Snapshot/ChatMessage/GeneratedReadme/ProjectIdea/Project creation) — not
+// a separate tracked "session" concept. It'll be sparse for a new account;
+// that's honest, not a bug.
+
+export interface CurrentUser {
+  id: string;
+  name: string | null;
+  githubId: string;
+  createdAt: string;
+}
+
+export interface DailyActivity {
+  /** YYYY-MM-DD, UTC */
+  date: string;
+  count: number;
+}
+
+export interface LanguageBreakdown {
+  name: string;
+  totalLines: number;
+  percentage: number;
+}
+
+export interface ActivityResponse {
+  activityByDate: DailyActivity[];
+  currentStreak: number;
+  longestStreak: number;
+  totalActiveDays: number;
+  languageBreakdown: LanguageBreakdown[];
+}

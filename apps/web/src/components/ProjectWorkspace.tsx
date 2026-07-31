@@ -30,7 +30,7 @@ export function ProjectWorkspace({
   return (
     <div className="flex flex-col h-screen">
       <header className="gradient-surface px-6 py-4">
-        <h1 className="text-lg font-semibold">
+        <h1 className="text-xl font-bold">
           {project.githubOwner}/{project.githubRepo}
         </h1>
       </header>

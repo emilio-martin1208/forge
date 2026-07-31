@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Forge — The AI Software Architect",
+  title: "Forge — by Shinobi Tools",
   description: "Forge transforms a software idea into a complete engineering plan and stays synchronized with your GitHub repository.",
 };
 
