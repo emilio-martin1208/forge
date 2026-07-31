@@ -32,6 +32,14 @@ export default function HomePage() {
       >
         Also from Shinobi Tools — Shinobi, video → clips →
       </a>
+      <a
+        href="http://localhost:8900/brand/index.html"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="text-xs text-muted hover:underline"
+      >
+        Shinobi Tools Home
+      </a>
     </main>
   );
 }
