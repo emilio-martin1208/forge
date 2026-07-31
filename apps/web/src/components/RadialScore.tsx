@@ -8,7 +8,8 @@ const RADIUS = (SIZE - STROKE) / 2;
 const CIRCUMFERENCE = 2 * Math.PI * RADIUS;
 
 /** A score is a ring you can hover, not a bare number — the number stays (it's real, useful
- * precision), but it's the label inside a chart, not the whole display. */
+ * precision), but it's the label inside a chart, not the whole display. No card behind it —
+ * the ring already carries the color, a box around it just adds a grey rectangle. */
 export function RadialScore({ label, value, highlight }: { label: string; value: number; highlight?: boolean }) {
   const [hovered, setHovered] = useState(false);
   const gradientId = useId();
@@ -16,7 +17,7 @@ export function RadialScore({ label, value, highlight }: { label: string; value:
 
   return (
     <div
-      className={`p-4 flex items-center gap-4 transition ${highlight ? "gradient-active" : "gradient-surface"}`}
+      className="flex items-center gap-4"
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
@@ -45,7 +46,9 @@ export function RadialScore({ label, value, highlight }: { label: string; value:
           {value}
         </text>
       </svg>
-      <span className="text-xs uppercase tracking-wide text-muted capitalize">{label}</span>
+      <span className={`text-xs uppercase tracking-wide capitalize ${highlight ? "gradient-accent-text font-semibold" : "text-muted"}`}>
+        {label}
+      </span>
     </div>
   );
 }

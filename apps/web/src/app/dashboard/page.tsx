@@ -119,10 +119,10 @@ export default async function DashboardPage() {
 
 function StatCard({ label, value, unit, highlight }: { label: string; value: number; unit: string; highlight?: boolean }) {
   return (
-    <div className={`p-5 ${highlight ? "gradient-active" : "gradient-surface"}`}>
+    <div>
       <p className="text-xs uppercase tracking-wide text-muted">{label}</p>
-      <p className="text-3xl font-bold mt-1">
-        {value} <span className="text-sm font-normal text-muted">{unit}</span>
+      <p className={`text-4xl font-bold mt-1 ${highlight ? "gradient-accent-text" : ""}`}>
+        {value} <span className="text-base font-normal text-muted">{unit}</span>
       </p>
     </div>
   );
