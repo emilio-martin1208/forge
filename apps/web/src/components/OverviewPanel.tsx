@@ -1,4 +1,6 @@
 import type { HealthDashboardResponse } from "@forge/types";
+import { RadialScore } from "./RadialScore";
+import { DonutChart } from "./DonutChart";
 
 export function OverviewPanel({ dashboard }: { dashboard: HealthDashboardResponse | null }) {
   if (!dashboard) {
@@ -16,21 +18,20 @@ export function OverviewPanel({ dashboard }: { dashboard: HealthDashboardRespons
     <div className="flex flex-col gap-10">
       <p className="text-sm text-muted -mt-2">commit {snapshot.commitSha.slice(0, 7)}</p>
 
-      <section className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-        <ScoreCard label="Overall" value={overallScore} highlight />
+      <section className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+        <RadialScore label="Overall" value={overallScore} highlight />
         {Object.entries(snapshot.healthScores).map(([key, value]) => (
-          <ScoreCard key={key} label={key.replace(/([A-Z])/g, " $1").trim()} value={value} />
+          <RadialScore key={key} label={key.replace(/([A-Z])/g, " $1").trim()} value={value} />
         ))}
       </section>
 
       <section>
         <h3 className="text-sm font-medium mb-3">Languages</h3>
-        <div className="flex flex-wrap gap-2">
-          {snapshot.languages.map((l) => (
-            <span key={l.name} className="gradient-surface px-3 py-1 text-sm text-muted">
-              {l.name} · {l.percentage}%
-            </span>
-          ))}
+        <div className="gradient-surface p-6">
+          <DonutChart
+            data={snapshot.languages.map((l) => ({ name: l.name, percentage: l.percentage }))}
+            centerLabel={`${snapshot.languages.length}`}
+          />
         </div>
       </section>
 
@@ -62,15 +63,6 @@ export function OverviewPanel({ dashboard }: { dashboard: HealthDashboardRespons
           ))}
         </div>
       </section>
-    </div>
-  );
-}
-
-function ScoreCard({ label, value, highlight }: { label: string; value: number; highlight?: boolean }) {
-  return (
-    <div className={`p-4 flex flex-col gap-1 ${highlight ? "gradient-active" : "gradient-surface"}`}>
-      <span className="text-xs uppercase tracking-wide text-muted capitalize">{label}</span>
-      <span className="text-2xl font-semibold">{value}</span>
     </div>
   );
 }

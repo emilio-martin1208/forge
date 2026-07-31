@@ -3,7 +3,7 @@ import { forgeApi } from "@/lib/api";
 import { greetingForHour } from "@/lib/greeting";
 import { languageGradient } from "@/lib/languageColor";
 import { ActivityCalendar } from "@/components/ActivityCalendar";
-import { LanguageChart } from "@/components/LanguageChart";
+import { DonutChart } from "@/components/DonutChart";
 
 export default async function DashboardPage() {
   const [projects, ideas, me, activity] = await Promise.all([
@@ -53,7 +53,10 @@ export default async function DashboardPage() {
           <section>
             <h2 className="text-lg font-medium mb-4">Favorite languages</h2>
             <div className="gradient-surface p-6">
-              <LanguageChart languages={activity.languageBreakdown} />
+              <DonutChart
+                data={activity.languageBreakdown.map((l) => ({ name: l.name, percentage: l.percentage }))}
+                centerLabel={`${activity.languageBreakdown.length}`}
+              />
             </div>
           </section>
         </>
